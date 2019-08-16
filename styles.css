@@ -46,6 +46,14 @@ body {
     padding: 8rem;
 }
 
+.quiz-container .quiz ul li div.question span.label-text {
+    font-size: 2rem;
+    padding: 10px 20px;
+    border-radius: 50rem;
+    background: skyblue;
+    color: #fff;
+}
+
 .quiz-container .quiz ul li div.question h2 {
     font-size: 5rem;
 }

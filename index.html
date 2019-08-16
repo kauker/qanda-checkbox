@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
 
-  <title>The quiz</title>
+  <title>QandA</title>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
   <link rel="stylesheet" href="styles.css">
   
@@ -14,19 +14,30 @@
 </head>
 
 <body>
-    <div class="container">
-        <!-- <h1>Jquery quiz</h1> -->
-    </div>
+    <nav class="navbar navbar-default navbar-fixed-top">
+      <div class="container">
+        <button type="button" id="sendId" class="btn btn-default navbar-btn">Send id</button>
+        <button type="button" id="getResults" class="btn btn-default navbar-btn">Show results</button>
+      </div>
+    </nav>
     
     <div id="root"></div>
 
     <script src="sample_data.js"></script>
   <script src="app.js"></script>
   <script>
-      $.fn.quiz({
+    var qanda =  $.fn.qanda({
           container: '#root',
           data: sample_data
-      })
+      });
+    $('button#sendId').click(function() {
+      qanda.sendId('someId');
+    })
+
+    $('button#getResults').click(function() {
+      var results = qanda.getResults();
+      alert(JSON.stringify(results));
+    })
   </script>
 </body>
 </html>

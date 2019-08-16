@@ -1,6 +1,6 @@
 (function( $ ) {
  
-    $.fn.quiz = function(options) {
+    $.fn.qanda = function(options) {
  
         var settings = $.extend({
             // These are the defaults.
@@ -37,9 +37,12 @@
             var questionsHtml = '';
             for (var i = 0; i < settings.data.questions.length; i++){
                 var q = settings.data.questions[i];
+                var label = '';
+                if (q.label) label = '<span class="label-text">' + q.label + '</span>';
                 questionsHtml += '<li>' + 
                 '<div class="question">' +
-                '<h2 class="title">' + q.label + '</h2>' +
+                label +
+                '<h2 class="title">' + q.question + '</h2>' +
                 '<p class="description">' + q.description + '</p>' +
                 '<div class="options">' + q.options.map(renderOption).join("") + '</div>' +
                 '</li>';
@@ -62,26 +65,36 @@
             } else if (opt === false) {
                 text = 'No';
             }
-            return '<button class="btn btn-default btn-lg">' + text + '</button>';
+            return '<button class="btn btn-default btn-lg" data-opt="' + opt + '">' + text + '</button>';
         }
 
         function scrollToNextQuestion(e) {
-            var l = ++Object.keys(answers).length;
-            if (!answers[l]){
+            var i = '' + Object.keys(answers).length;
+            if (!answers[i]){
                 $(this).addClass('btn-answer')
-                answers[l] = 'haha';
+                answers[i] = $(this).data('opt');
                 
-                $quizCol.scrollTo($quizCol.find('ul li').eq(l), 1000);
+                $quizCol.scrollTo($quizCol.find('ul li').eq(++i), 900);
                 renderProgressBar();
             }
             
         }
-        
-        render();
-        renderQuestions();
-        renderProgressBar();
-        $quizCol.on('click', 'button', scrollToNextQuestion)
-        return this;
+              
+        var numIds = 0;
+        return {
+            sendId: function(id) {
+                numIds++;
+                if (numIds === 2) {
+                    render();
+                    renderQuestions();
+                    renderProgressBar();
+                    $quizCol.on('click', 'button', scrollToNextQuestion);
+                }
+            },
+            getResults: function() {
+                return answers;
+            }
+        };
  
     };
  
