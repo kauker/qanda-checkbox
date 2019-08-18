@@ -50,7 +50,7 @@
                 var q = settings.data.questions[key];
                 var label = '';
                 if (q.label) label = '<span class="label-text">' + q.label + '</span>';
-                questionsHtml += '<li>' + 
+                questionsHtml += '<li data-question-id="' + key + '">' + 
                 '<div class="question">' +
                 label +
                 '<h2 class="title">' + q.question + '</h2>' +
@@ -74,10 +74,11 @@
         }
 
         function scrollToNextQuestion(e) {
-            var i = '' + Object.keys(answers).length;
-            if (!answers[i]){
+            var questionId = $(this).parents('li').data('question-id');
+            var i = Object.keys(answers).length;
+            if (!answers[questionId]){
                 $(this).addClass('btn-answer')
-                answers[i] = $(this).data('opt');
+                answers[questionId] = $(this).data('opt');
                 
                 $quizCol.scrollTo($quizCol.find('ul li').eq(++i), 900);
                 renderProgressBar();
@@ -114,7 +115,10 @@
 
             },
             getResults: function() {
-                return answers;
+                return {
+                    answers: answers,
+                    group_id: currentGoupId
+                };
             }
         };
  
