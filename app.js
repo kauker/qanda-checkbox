@@ -28,7 +28,7 @@
 
         function renderProgressBar() {
             var numAnswers = Object.keys(answers).length,
-                totalQuestions = Object.keys(settings.data.questions).length;
+                totalQuestions = settings.data.groups[currentGoupId].questions.split(',').length;
             $progressCol.empty();
             $progressCol.append('<p>' + settings.data.groups[currentGoupId].group_name + '</p>');
             $progressCol.append('<div class="progress">' +
