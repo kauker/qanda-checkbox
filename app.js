@@ -9,13 +9,17 @@
         }, options );
         
         var $row,
-            $progressCol = $('<div class="col-sm-4 progress-container"></div>'),
-            $quizCol = $('<div class="col-sm-8 quiz"></div>');
+            $progressCol,
+            $quizCol;
         var answers = {};
+        var currentGoupId = null;
         function render() {
             $row = $('<div class="row"></div>');
+            $progressCol = $('<div class="col-sm-4 progress-container"></div>');
+            $quizCol = $('<div class="col-sm-8 quiz"></div>');
             var $container = $('<div class="container-fluid quiz-container"></div>');
             $(settings.container)
+            .empty()
             .append($container.append($row));
 
             $row.append($progressCol);
@@ -24,8 +28,9 @@
 
         function renderProgressBar() {
             var numAnswers = Object.keys(answers).length,
-                totalQuestions = settings.data.questions.length;
+                totalQuestions = Object.keys(settings.data.questions).length;
             $progressCol.empty();
+            $progressCol.append('<p>' + settings.data.groups[currentGoupId].group_name + '</p>');
             $progressCol.append('<div class="progress">' +
             '<div class="progress-bar" style="width:' + numAnswers / totalQuestions * 100 + '%;">' +
             '</div>' +
@@ -35,8 +40,14 @@
 
         function renderQuestions() {
             var questionsHtml = '';
-            for (var i = 0; i < settings.data.questions.length; i++){
-                var q = settings.data.questions[i];
+            var groupQuestions = settings.data.groups[currentGoupId].questions.split(',');
+            var questionKeys = Object.keys(settings.data.questions)
+                .filter(function(key) { 
+                    return groupQuestions.indexOf(key) > -1
+                });
+            for (var i = 0; i < questionKeys.length; i++){
+                var key = questionKeys[i]
+                var q = settings.data.questions[key];
                 var label = '';
                 if (q.label) label = '<span class="label-text">' + q.label + '</span>';
                 questionsHtml += '<li>' + 
@@ -44,7 +55,7 @@
                 label +
                 '<h2 class="title">' + q.question + '</h2>' +
                 '<p class="description">' + q.description + '</p>' +
-                '<div class="options">' + q.options.map(renderOption).join("") + '</div>' +
+                '<div class="options">' + Object.keys(q.options).map(key => q.options[key]).map(renderOption).join("") + '</div>' +
                 '</li>';
             }
 
@@ -59,13 +70,7 @@
         }
 
         function renderOption(opt, i) {
-            var text = opt;
-            if (opt === true) {
-                text = 'Yes';
-            } else if (opt === false) {
-                text = 'No';
-            }
-            return '<button class="btn btn-default btn-lg" data-opt="' + opt + '">' + text + '</button>';
+            return '<button class="btn btn-default btn-lg" data-opt="' + opt.label + '">' + opt.label + '</button>';
         }
 
         function scrollToNextQuestion(e) {
@@ -79,17 +84,34 @@
             }
             
         }
+
+        function init(groupId) {
+            return function() {
+                answers = {}
+                currentGoupId = groupId;
+                render(groupId);
+                renderQuestions(groupId);
+                renderProgressBar(groupId);
+                $quizCol.on('click', 'button', scrollToNextQuestion);
+            }
+        }
               
-        var numIds = 0;
+        var sentIds = {};
+        // var renderQueue = [];
         return {
             sendId: function(id) {
-                numIds++;
-                if (numIds === 2) {
-                    render();
-                    renderQuestions();
-                    renderProgressBar();
-                    $quizCol.on('click', 'button', scrollToNextQuestion);
+                sentIds[id] = sentIds[id] ? ++sentIds[id] : 1;
+                var groupIds = Object.keys(settings.data.groups);
+                for (var i = 0; i < groupIds.length; i++) {
+                    var groupId = groupIds[i];
+                    var ids = settings.data.groups[groupId].ids.split(',');
+                    if (sentIds[ids[0]] && sentIds[ids[1]]) {
+                        sentIds[ids[0]]--;
+                        sentIds[ids[1]]--;
+                        init(groupId)();
+                    }
                 }
+
             },
             getResults: function() {
                 return answers;
