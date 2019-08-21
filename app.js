@@ -10,9 +10,14 @@
         
         var $row,
             $progressCol,
-            $quizCol;
+            $quizCol,
+            dialog,
+            $form;
         var answers = {};
-        var currentGoupId = null;
+        var currentGoupId = null,
+            currentQuestionId = null;
+        var groups = settings.data.groups,
+            questions = settings.data.questions;
         function render() {
             $row = $('<div class="row"></div>');
             $progressCol = $('<div class="col-sm-4 progress-container"></div>');
@@ -24,30 +29,50 @@
 
             $row.append($progressCol);
             $row.append($quizCol);
+            var $ul = $('<ul></ul>');
+            $quizCol.append($ul);
+
+            $quizCol.on('click', 'button.option', onAnswerClick);
+            $quizCol.on('click', 'button.continue', onContinueClick);
+            initDialog();
         }
 
-        function renderProgressBar() {
-            var numAnswers = Object.keys(answers).length,
-                totalQuestions = settings.data.groups[currentGoupId].questions.split(',').length;
-            $progressCol.empty();
-            $progressCol.append('<p>' + settings.data.groups[currentGoupId].group_name + '</p>');
-            $progressCol.append('<div class="progress">' +
-            '<div class="progress-bar" style="width:' + numAnswers / totalQuestions * 100 + '%;">' +
-            '</div>' +
-            '</div>' + 
-            '<span>' + numAnswers + ' of ' + totalQuestions+ '</span>')
+        function renderProgressBar(groupId) {
+            var numAnswers = 0,
+                totalQuestions = groups[groupId].questions.split(',').length;
+
+            $progressCol.append('<h3>' + groups[groupId].group_name + '</h3>');
+            $progressCol.append('<div class="'  + groupId + '">' +
+                '<div class="progress">' +
+                    '<div class="progress-bar" style="width:' + numAnswers / totalQuestions * 100 + '%;">' + '</div>' +
+                '</div>' + 
+                '<span>' + numAnswers + ' of ' + totalQuestions + '</span>' +
+            '</div>')
         }
 
-        function renderQuestions() {
+        function updateProgressBar() {
+            var numAnswers = Object.keys(answers[currentGoupId]).length,
+                totalQuestions = groups[currentGoupId].questions.split(',').length;
+            
+            $progressCol.find('.' + currentGoupId + ' .progress-bar')
+                .animate(
+                    {width: numAnswers / totalQuestions * 100 + '%'}, 
+                    {duration: 200, easing:'linear'}
+                );
+            
+            $progressCol.find('.' + currentGoupId + ' span').text(numAnswers + ' of ' + totalQuestions)
+        }
+
+        function renderQuestions(groupId) {
             var questionsHtml = '';
-            var groupQuestions = settings.data.groups[currentGoupId].questions.split(',');
-            var questionKeys = Object.keys(settings.data.questions)
+            var groupQuestions = groups[groupId].questions.split(',');
+            var questionKeys = Object.keys(questions)
                 .filter(function(key) { 
                     return groupQuestions.indexOf(key) > -1
                 });
             for (var i = 0; i < questionKeys.length; i++){
                 var key = questionKeys[i]
-                var q = settings.data.questions[key];
+                var q = questions[key];
                 var label = '';
                 if (q.label) label = '<span class="label-text">' + q.label + '</span>';
                 questionsHtml += '<li data-question-id="' + key + '">' + 
@@ -59,66 +84,146 @@
                 '</li>';
             }
 
-            var $ul = $('<ul></ul>');
-            $quizCol.append($ul.append(questionsHtml));
             var finalMessage = '<li class="final-message">' + 
             '<div class="question">' +
             '<h2>' + settings.data.finalMessage.label + '</h2>' + 
-            '<p>' + settings.data.finalMessage.description + '</h2>' +
+            '<p>' + settings.data.finalMessage.description + '</p>' +
+            '<p>You just finished ' + groups[groupId].group_name + '</p>' +
             '</li>';
-            $ul.append(finalMessage);
+            questionsHtml += finalMessage;
+
+            $quizCol.find('ul').append(questionsHtml);
+
+            var startMessage = '<li class="start-message current">' + 
+            '<div class="question">' +
+            '<h2>' + settings.data.startMessage.label + '</h2>' + 
+            '<p>' + settings.data.startMessage.description + '</p>' +
+            '<p>Details: ' + groups[groupId].group_name + '</p>' +
+            '<div class="text-center">' +
+            '<button class="btn btn-info btn-lg continue" data-group-id="' + groupId + '">' + 'Get started' + '</button>';
+            '</div>' +
+            '</li>';
+            var startLi = $quizCol.find('ul li.start-message');
+            if (!startLi.length) $quizCol.find('ul').prepend(startMessage);
         }
 
         function renderOption(opt, i) {
-            return '<button class="btn btn-default btn-lg" data-opt="' + opt.label + '">' + opt.label + '</button>';
+            return '<button class="btn btn-default btn-lg option" data-opt="' + opt.value + '" data-action="' + opt.action + '">' + opt.label + '</button>';
         }
 
-        function scrollToNextQuestion(e) {
-            var questionId = $(this).parents('li').data('question-id');
-            var i = Object.keys(answers).length;
-            if (!answers[questionId]){
-                $(this).addClass('btn-answer')
-                answers[questionId] = $(this).data('opt');
-                
-                $quizCol.scrollTo($quizCol.find('ul li').eq(++i), 900);
-                renderProgressBar();
+        function renderNextButton(groupId) {
+            var finalLi = $quizCol.find('ul li.final-message').last();
+            if (finalLi.length) finalLi.find('.question').append('<button class="btn btn-success btn-lg continue" data-group-id="' + groupId + '">' + 'Continue' + '</button>');
+        }
+
+        function scrollToNextQuestion() {
+            var $nextLi = $quizCol.find('li.current');
+            $quizCol.scrollTo($nextLi, 900);
+
+        }
+
+        function onAnswerClick() {
+            if ($(this).data('action') === true) {
+                dialog.find( "textarea" ).val('');
+                dialog.dialog("option", "title", questions[currentQuestionId].question);
+                dialog.dialog('open');
+            } else {
+                if (!answers[currentGoupId][currentQuestionId]){
+                    $(this).addClass('btn-answer')
+                    setAnswer($(this).data('opt'))
+                }
             }
+        }
+
+        function setAnswer(val) {
+            answers[currentGoupId][currentQuestionId] = val;
+            var $nextLi = $quizCol.find('li.current')
+                .removeClass('current')
+                .next()
+                .addClass('current');
+
+            currentQuestionId = $nextLi.data('question-id');
+
+            scrollToNextQuestion();
             
+            updateProgressBar();
+        }
+
+        function onContinueClick() {
+            // var i = $(this).parents('li.current').index();
+            var $nextLi = $(this).parents('li.current')
+                .removeClass('current')
+                .next()
+                .addClass('current');
+            $quizCol.scrollTo($nextLi, 900);
+
+            currentGoupId = $(this).data('group-id');
+            answers[currentGoupId] = {};
+            currentQuestionId = $nextLi.data('question-id');
+        }
+
+        function initDialog() {
+            $form = $('<div id="dialog-form">' +
+            '<p class="validateTips">All form fields are required.</p>' +
+            '<form>' +
+                '<label for="message">Your answer</label>' +
+                '<textarea name="message" id="message" rows="5" class="text ui-widget-content ui-corner-all"></textarea>' +
+                '<input type="submit" tabindex="-1" style="position:absolute; top:-1000px">' +
+            '</form>' +
+            '</div>');
+
+            $(settings.container)
+            .append($form);
+            dialog = $form.dialog({
+                autoOpen: false,
+                closeOnEscape: false,
+                height: 300,
+                width: 350,
+                modal: true,
+                buttons: {
+                  "Submit": function(){
+                      var message = $form.find('textarea').val();
+                      if (message) {
+                        setAnswer(message);
+                        dialog.dialog( "close" );
+                      }
+                    
+                  },
+                },
+                close: function() {
+                //   form[ 0 ].reset();
+                //   allFields.removeClass( "ui-state-error" );
+                }
+            });
         }
 
         function init(groupId) {
-            return function() {
-                answers = {}
-                currentGoupId = groupId;
-                render(groupId);
-                renderQuestions(groupId);
-                renderProgressBar(groupId);
-                $quizCol.on('click', 'button', scrollToNextQuestion);
-            }
+            renderNextButton(groupId);
+            renderQuestions(groupId);
+            renderProgressBar(groupId); 
         }
-              
-        var sentIds = {};
-        // var renderQueue = [];
+
+        render(); 
+
+        var sentIds = {},
+            renderedGoups = {};
+
         return {
             sendId: function(id) {
                 sentIds[id] = sentIds[id] ? ++sentIds[id] : 1;
-                var groupIds = Object.keys(settings.data.groups);
+                var groupIds = Object.keys(groups);
                 for (var i = 0; i < groupIds.length; i++) {
                     var groupId = groupIds[i];
-                    var ids = settings.data.groups[groupId].ids.split(',');
-                    if (sentIds[ids[0]] && sentIds[ids[1]]) {
-                        sentIds[ids[0]]--;
-                        sentIds[ids[1]]--;
-                        init(groupId)();
+                    var ids = groups[groupId].ids.split(',');
+                    if (sentIds[ids[0]] && sentIds[ids[1]] && !renderedGoups[groupId]) {
+                        renderedGoups[groupId] = true;
+                        init(groupId);
                     }
                 }
 
             },
             getResults: function() {
-                return {
-                    answers: answers,
-                    group_id: currentGoupId
-                };
+                return answers;
             }
         };
  

@@ -6,19 +6,23 @@ var sample_data = {
             description: "Please make sure to select the breed of dog that you have",
             options: {
                 1: {
-                    label: "true",
-                    action: ""
+                    label: "Yes",
+                    value: "1",
+                    action: "true"
                 },
                 2: {
                     label: "false",
-                    action: ""
+                    value: "false",
+                    action: "true"
                 },
                 3: {
                     label: 'Not relevant',
+                    value: "Not relevant",
                     action: ""
                 },
                 4: {
                     label: 'Partially',
+                    value: "Partially",
                     action: ""
                 }
             }
@@ -29,11 +33,13 @@ var sample_data = {
             options: {
                 1: {
                     label: "true",
-                    action: ""
+                    value: "true",
+                    action: "true"
                 },
                 2: {
                     label: "false",
-                    action: ""
+                    value: "0",
+                    action: "true"
                 }
             }
         },
@@ -44,18 +50,22 @@ var sample_data = {
             options: {
                 1: {
                     label: "true",
+                    value: "true",
                     action: ""
                 },
                 2: {
                     label: "false",
+                    value: "0",
                     action: ""
                 },
                 3: {
                     label: 'Not relevant',
+                    value: 'Not relevant',
                     action: ""
                 },
                 4: {
                     label: 'Partially',
+                    value: 'Partially',
                     action: ""
                 }
             }
@@ -66,18 +76,22 @@ var sample_data = {
             options: {
                 1: {
                     label: "true",
+                    value: "true",
                     action: ""
                 },
                 2: {
                     label: "false",
+                    value: "false",
                     action: ""
                 },
                 3: {
                     label: 'Not relevant',
+                    value: 'Not relevant',
                     action: ""
                 },
                 4: {
                     label: 'Partially',
+                    value: 'Partially',
                     action: ""
                 }
             }
@@ -88,18 +102,22 @@ var sample_data = {
             options: {
                 1: {
                     label: "true",
+                    value: "true",
                     action: ""
                 },
                 2: {
                     label: "false",
+                    value: "false",
                     action: ""
                 },
                 3: {
                     label: 'Not relevant',
+                    value: 'Not relevant',
                     action: ""
                 },
                 4: {
                     label: 'Partially',
+                    value: 'Partially',
                     action: ""
                 }
             }
@@ -120,6 +138,10 @@ var sample_data = {
               label: '',
               description: '',
             },
+    },
+    startMessage: {
+        label: "Welcome!",
+        description: "Please take our quiz. Press button to proceed to questions. Good luck."
     },
     finalMessage: {
         label: "Congratulations!",

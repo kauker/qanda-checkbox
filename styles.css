@@ -81,3 +81,12 @@ body {
     border: 1px solid seagreen;
     color: #fff;
 }
+
+textarea {
+    width: 100%;
+    resize: none;
+}
+
+.ui-dialog-titlebar-close {
+    display: none;
+}
