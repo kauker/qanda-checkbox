@@ -15,7 +15,8 @@
             $form;
         var answers = {};
         var currentGoupId = null,
-            currentQuestionId = null;
+            currentQuestionId = null,
+            selectedOption;
         var groups = settings.data.groups,
             questions = settings.data.questions;
         function render() {
@@ -123,6 +124,7 @@
         }
 
         function onAnswerClick() {
+            selectedOption = $(this).data('opt');
             if ($(this).data('action') === true) {
                 dialog.find( "textarea" ).val('');
                 dialog.dialog("option", "title", questions[currentQuestionId].question);
@@ -130,7 +132,7 @@
             } else {
                 if (!answers[currentGoupId][currentQuestionId]){
                     $(this).addClass('btn-answer')
-                    setAnswer($(this).data('opt'))
+                    setAnswer(selectedOption);
                 }
             }
         }
@@ -184,7 +186,7 @@
                   "Submit": function(){
                       var message = $form.find('textarea').val();
                       if (message) {
-                        setAnswer(message);
+                        setAnswer({value: selectedOption, extra: message});
                         dialog.dialog( "close" );
                       }
                     
