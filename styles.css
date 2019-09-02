@@ -9,44 +9,44 @@ body {
     
 }
 
-.quiz-container {
+.qanda-container {
     height: 750px;
 }
 
-.quiz-container .row {
+.qanda-container .row {
     height: 100%;
 }
 
-.quiz-container .progress-container {
+.qanda-container .progress-container {
     height: 100%;
     background: khaki;
     padding-top: 10rem;
 }
 
-.quiz-container .quiz {
+.qanda-container .qanda {
     max-height: 100%;
     overflow: hidden;
 }
-.quiz-container .quiz ul {
+.qanda-container .qanda ul {
     list-style: none;
     margin: 0;
     padding: 0;
 }
 
-.quiz-container .quiz ul li {
+.qanda-container .qanda ul li {
     display: block;
 }
 
-.quiz-container .quiz ul li.final-message {
+.qanda-container .qanda ul li.final-message {
     height: 750px;
     padding: 10rem 0;
 }
 
-.quiz-container .quiz ul li div.question {
+.qanda-container .qanda ul li div.question {
     padding: 8rem;
 }
 
-.quiz-container .quiz ul li div.question span.label-text {
+.qanda-container .qanda ul li div.question span.label-text {
     font-size: 2rem;
     padding: 10px 20px;
     border-radius: 50rem;
@@ -54,21 +54,21 @@ body {
     color: #fff;
 }
 
-.quiz-container .quiz ul li div.question h2 {
+.qanda-container .qanda ul li div.question h2 {
     font-size: 5rem;
 }
 
-.quiz-container .quiz ul li div.question p {
+.qanda-container .qanda ul li div.question p {
     font-size: 3rem;
     font-style: italic;
     color: #888;
 }
 
-.quiz-container .quiz ul li div.options {
+.qanda-container .qanda ul li div.options {
     margin: 30px 0;
 }
 
-.quiz-container .quiz ul li div.options button.btn-default {
+.qanda-container .qanda ul li div.options button.btn-default {
     background: none;
     outline: none;
     width: 280px;
@@ -76,7 +76,7 @@ body {
     margin: 10px;
 }
 
-.quiz-container .quiz ul li div.options button.btn-answer {
+.qanda-container .qanda ul li div.options button.btn-answer {
     background: seagreen;
     border: 1px solid seagreen;
     color: #fff;

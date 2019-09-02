@@ -10,7 +10,7 @@
         
         var $row,
             $progressCol,
-            $quizCol,
+            $qandaCol,
             dialog,
             $form;
         var answers = {};
@@ -22,19 +22,19 @@
         function render() {
             $row = $('<div class="row"></div>');
             $progressCol = $('<div class="col-sm-4 progress-container"></div>');
-            $quizCol = $('<div class="col-sm-8 quiz"></div>');
-            var $container = $('<div class="container-fluid quiz-container"></div>');
+            $qandaCol = $('<div class="col-sm-8 qanda"></div>');
+            var $container = $('<div class="container-fluid qanda-container"></div>');
             $(settings.container)
             .empty()
             .append($container.append($row));
 
             $row.append($progressCol);
-            $row.append($quizCol);
+            $row.append($qandaCol);
             var $ul = $('<ul></ul>');
-            $quizCol.append($ul);
+            $qandaCol.append($ul);
 
-            $quizCol.on('click', 'button.option', onAnswerClick);
-            $quizCol.on('click', 'button.continue', onContinueClick);
+            $qandaCol.on('click', 'button.option', onAnswerClick);
+            $qandaCol.on('click', 'button.continue', onContinueClick);
             initDialog();
         }
 
@@ -93,7 +93,7 @@
             '</li>';
             questionsHtml += finalMessage;
 
-            $quizCol.find('ul').append(questionsHtml);
+            $qandaCol.find('ul').append(questionsHtml);
 
             var startMessage = '<li class="start-message current">' + 
             '<div class="question">' +
@@ -104,8 +104,8 @@
             '<button class="btn btn-info btn-lg continue" data-group-id="' + groupId + '">' + 'Get started' + '</button>';
             '</div>' +
             '</li>';
-            var startLi = $quizCol.find('ul li.start-message');
-            if (!startLi.length) $quizCol.find('ul').prepend(startMessage);
+            var startLi = $qandaCol.find('ul li.start-message');
+            if (!startLi.length) $qandaCol.find('ul').prepend(startMessage);
         }
 
         function renderOption(opt, i) {
@@ -113,13 +113,13 @@
         }
 
         function renderNextButton(groupId) {
-            var finalLi = $quizCol.find('ul li.final-message').last();
+            var finalLi = $qandaCol.find('ul li.final-message').last();
             if (finalLi.length) finalLi.find('.question').append('<button class="btn btn-success btn-lg continue" data-group-id="' + groupId + '">' + 'Continue' + '</button>');
         }
 
         function scrollToNextQuestion() {
-            var $nextLi = $quizCol.find('li.current');
-            $quizCol.scrollTo($nextLi, 900);
+            var $nextLi = $qandaCol.find('li.current');
+            $qandaCol.scrollTo($nextLi, 900);
 
         }
 
@@ -139,7 +139,7 @@
 
         function setAnswer(val) {
             answers[currentGoupId][currentQuestionId] = val;
-            var $nextLi = $quizCol.find('li.current')
+            var $nextLi = $qandaCol.find('li.current')
                 .removeClass('current')
                 .next()
                 .addClass('current');
@@ -157,7 +157,7 @@
                 .removeClass('current')
                 .next()
                 .addClass('current');
-            $quizCol.scrollTo($nextLi, 900);
+            $qandaCol.scrollTo($nextLi, 900);
 
             currentGoupId = $(this).data('group-id');
             answers[currentGoupId] = {};
