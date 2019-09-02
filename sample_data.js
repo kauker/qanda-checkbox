@@ -121,6 +121,25 @@ var sample_data = {
                     action: ""
                 }
             }
+        },
+        6: {
+            label: 'SUPER secret',
+            question: "SECRET What color is your favorite dog?",
+            description: "Please make sure to select the breed of dog that you have",
+            hidden: true,
+            request_id: "12345",
+                options: {
+                    1: {
+                        label: "true",
+                        value: "true",
+                        action: ""
+                    },
+                    2: {
+                        label: "false",
+                        value: "false",
+                        action: ""
+                    },
+                }
         }
     },
     "groups": {
@@ -133,7 +152,7 @@ var sample_data = {
             },
         "group_number_2" : {
              group_name: 'name of group 2',
-              questions: "2,4,5",
+              questions: "2,4,5,6",
               ids : '4345,7245',
               label: '',
               description: '',

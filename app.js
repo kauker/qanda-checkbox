@@ -69,7 +69,7 @@
             var groupQuestions = groups[groupId].questions.split(',');
             var questionKeys = Object.keys(questions)
                 .filter(function(key) { 
-                    return groupQuestions.indexOf(key) > -1
+                    return groupQuestions.indexOf(key) > -1 && !questions[key].hidden
                 });
             for (var i = 0; i < questionKeys.length; i++){
                 var key = questionKeys[i]
@@ -199,6 +199,35 @@
             });
         }
 
+        function renderHiddenQuestion(key) {
+            var questionsHtml = '';
+            var q = questions[key];
+            var label = '';
+            var defaultLabel = 'Important question. Please answer';
+            label = '<span class="label-text">' + (q.label || defaultLabel) + '</span>';
+            questionsHtml += '<li class="current" data-question-id="' + key + '">' + 
+            '<div class="question">' +
+            label +
+            '<h2 class="title">' + q.question + '</h2>' +
+            '<p class="description">' + q.description + '</p>' +
+            '<div class="options">' + Object.keys(q.options).map(key => q.options[key]).map(renderOption).join("") + '</div>' +
+            '</li>';
+
+            var $nextLi = $qandaCol.find('li.current')
+                .removeClass('current');
+                $(questionsHtml).insertBefore($nextLi);
+                
+            updateProgressBar();
+            scrollToNextQuestion();
+            currentQuestionId = key;
+
+            var $overlay = $('<div class="overlay"></div>');
+            $qandaCol.append($overlay);
+            setTimeout(function(){
+                $overlay.fadeOut("slow");
+            }, 3000)
+        }
+
         function init(groupId) {
             renderNextButton(groupId);
             renderQuestions(groupId);
@@ -209,6 +238,7 @@
 
         var sentIds = {},
             renderedGoups = {};
+            renderedHiddenQuestions = {};
 
         return {
             sendId: function(id) {
@@ -222,6 +252,24 @@
                         init(groupId);
                     }
                 }
+
+                // check if it's secret question request
+                if (currentGoupId) {
+                    var groupQuestions = groups[currentGoupId].questions.split(',');
+                    var hiddenQuestionKeys = Object.keys(questions)
+                    .filter(function(key) { 
+                        return groupQuestions.indexOf(key) > -1 && questions[key].hidden
+                    });
+                    for (var i = 0; i < hiddenQuestionKeys.length; i++) {
+                        var key = hiddenQuestionKeys[i]
+                        var q = questions[key];
+                        if (q['request_id'] === id && !renderedHiddenQuestions[id]) {
+                            renderedHiddenQuestions[id] = true;
+                            renderHiddenQuestion(key);
+                        }
+                    }
+                }
+                
 
             },
             getResults: function() {
