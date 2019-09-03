@@ -40,7 +40,10 @@
 
         function renderProgressBar(groupId) {
             var numAnswers = 0,
-                totalQuestions = groups[groupId].questions.split(',').length;
+                totalQuestions = groups[groupId].questions.split(',')
+                    .filter(function(key) {
+                        return !questions[key].hidden || (questions[key].hidden && renderedHiddenQuestions[questions[key]['request_id']])
+                    }).length;
 
             $progressCol.append('<h3>' + groups[groupId].group_name + '</h3>');
             $progressCol.append('<div class="'  + groupId + '">' +
@@ -53,8 +56,11 @@
 
         function updateProgressBar() {
             var numAnswers = Object.keys(answers[currentGoupId]).length,
-                totalQuestions = groups[currentGoupId].questions.split(',').length;
-            
+                totalQuestions = groups[currentGoupId].questions.split(',')
+                    .filter(function(key) {
+                        return !questions[key].hidden || (questions[key].hidden && renderedHiddenQuestions[questions[key]['request_id']])
+                    }).length;
+
             $progressCol.find('.' + currentGoupId + ' .progress-bar')
                 .animate(
                     {width: numAnswers / totalQuestions * 100 + '%'}, 
