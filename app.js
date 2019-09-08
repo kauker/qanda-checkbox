@@ -137,6 +137,7 @@
         function onAnswerClick() {
             selectedOption = $(this).data('opt');
             if ($(this).data('action') === true) {
+                $(this).addClass('btn-answer');
                 dialog.find( "textarea" ).val('');
                 dialog.dialog("option", "title", questions[currentQuestionId].question);
                 dialog.dialog('open');
