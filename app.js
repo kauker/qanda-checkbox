@@ -21,7 +21,7 @@
             questions = settings.data.questions;
         function render() {
             $row = $('<div class="row"></div>');
-            $progressCol = $('<div class="col-sm-4 progress-container"></div>');
+            $progressCol = $('<div class="col-sm-4 progress-container"><div class="progress-inner">**insert here**</div></div>');
             $qandaCol = $('<div class="col-sm-8 qanda"></div>');
             var $container = $('<div class="container-fluid qanda-container"></div>');
             $(settings.container)
@@ -91,11 +91,17 @@
                 '</li>';
             }
 
+            function replaceTemplatedKey ( m, key ){
+                return groups[groupId].hasOwnProperty(key) ? groups[groupId][key] : "";
+              }
+            var finalDescription = settings.data.finalMessage.description.replace(/{{(\w*)}}/g, replaceTemplatedKey)
+
+            var startDescription = settings.data.startMessage.description.replace(/{{(\w*)}}/g, replaceTemplatedKey)
+
             var finalMessage = '<li class="final-message">' + 
             '<div class="question">' +
             '<h2>' + settings.data.finalMessage.label + '</h2>' + 
-            '<p>' + settings.data.finalMessage.description + '</p>' +
-            '<p>You just finished ' + groups[groupId].group_name + '</p>' +
+            '<p>' + finalDescription + '</p>' +
             '</li>';
             questionsHtml += finalMessage;
 
@@ -104,8 +110,7 @@
             var startMessage = '<li class="start-message current">' + 
             '<div class="question">' +
             '<h2>' + settings.data.startMessage.label + '</h2>' + 
-            '<p>' + settings.data.startMessage.description + '</p>' +
-            '<p>Details: ' + groups[groupId].group_name + '</p>' +
+            '<p>' + startDescription + '</p>' +
             '<div class="text-center">' +
             '<button class="btn btn-info btn-lg continue" data-group-id="' + groupId + '">' + 'Get started' + '</button>';
             '</div>' +

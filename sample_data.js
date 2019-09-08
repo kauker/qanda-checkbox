@@ -147,23 +147,23 @@ var sample_data = {
              group_name: "name of group 1",
               questions: "1,2,3,4,5",
               ids : '1234,1245',
-              label: '',
-              description: '',
+              label: 'label1',
+              description: 'some description1',
             },
         "group_number_2" : {
              group_name: 'name of group 2',
               questions: "2,4,5,6",
               ids : '4345,7245',
-              label: '',
-              description: '',
+              label: 'label2',
+              description: 'some description2',
             },
     },
     startMessage: {
         label: "Welcome!",
-        description: "Please take our quiz. Press button to proceed to questions. Good luck."
+        description: "Please take our quiz. Press button to proceed to questions. Good luck. Details: {{group_name}}... Group label: {{label}}. Group description = {{description}}"
     },
     finalMessage: {
         label: "Congratulations!",
-        description: "You answered all questions and now can get back to your work."
+        description: "You answered all questions and now can get back to your work. You just finished {{group_name}}."
     }
 }
