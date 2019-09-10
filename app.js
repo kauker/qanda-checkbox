@@ -70,13 +70,33 @@
             $progressCol.find('.' + currentGoupId + ' span').text(numAnswers + ' of ' + totalQuestions)
         }
 
-        function renderQuestions(groupId) {
+        function getQuestionsHtml(groupId) {
             var questionsHtml = '';
             var groupQuestions = groups[groupId].questions.split(',');
             var questionKeys = Object.keys(questions)
                 .filter(function(key) { 
                     return groupQuestions.indexOf(key) > -1 && !questions[key].hidden
                 });
+            function replaceTemplatedKey (m, key) {
+                return groups[groupId].hasOwnProperty(key) ? groups[groupId][key] : "";
+                }
+            var finalDescription = settings.data.finalMessage.description
+                .replace(/{{(\w*)}}/g, replaceTemplatedKey)
+
+            var startDescription = settings.data.startMessage.description
+                .replace(/{{(\w*)}}/g, replaceTemplatedKey)
+
+            var startMessage = '<li class="start-message current">' + 
+                '<div class="question">' +
+                '<h2>' + settings.data.startMessage.label + '</h2>' + 
+                '<p>' + startDescription + '</p>' +
+                '<div class="text-center">' +
+                '<button class="btn btn-info btn-lg continue" data-group-id="' + groupId + '">' + 'Get started' + '</button>';
+                '</div>' +
+                '</li>';
+            var startLi = $qandaCol.find('ul li.start-message');
+                if (!startLi.length) questionsHtml += startMessage;
+
             for (var i = 0; i < questionKeys.length; i++){
                 var key = questionKeys[i]
                 var q = questions[key];
@@ -91,13 +111,6 @@
                 '</li>';
             }
 
-            function replaceTemplatedKey ( m, key ){
-                return groups[groupId].hasOwnProperty(key) ? groups[groupId][key] : "";
-              }
-            var finalDescription = settings.data.finalMessage.description.replace(/{{(\w*)}}/g, replaceTemplatedKey)
-
-            var startDescription = settings.data.startMessage.description.replace(/{{(\w*)}}/g, replaceTemplatedKey)
-
             var finalMessage = '<li class="final-message">' + 
             '<div class="question">' +
             '<h2>' + settings.data.finalMessage.label + '</h2>' + 
@@ -105,18 +118,12 @@
             '</li>';
             questionsHtml += finalMessage;
 
-            $qandaCol.find('ul').append(questionsHtml);
+            return questionsHtml;
+        }
 
-            var startMessage = '<li class="start-message current">' + 
-            '<div class="question">' +
-            '<h2>' + settings.data.startMessage.label + '</h2>' + 
-            '<p>' + startDescription + '</p>' +
-            '<div class="text-center">' +
-            '<button class="btn btn-info btn-lg continue" data-group-id="' + groupId + '">' + 'Get started' + '</button>';
-            '</div>' +
-            '</li>';
-            var startLi = $qandaCol.find('ul li.start-message');
-            if (!startLi.length) $qandaCol.find('ul').prepend(startMessage);
+        function renderQuestions(groupId) {
+            var questionsHtml = getQuestionsHtml(groupId);
+            $qandaCol.find('ul').append(questionsHtml);
         }
 
         function renderOption(opt, i) {
@@ -172,7 +179,7 @@
             $qandaCol.scrollTo($nextLi, 900);
 
             currentGoupId = $(this).data('group-id');
-            answers[currentGoupId] = {};
+            if (!answers[currentGoupId]) answers[currentGoupId] = {};
             currentQuestionId = $nextLi.data('question-id');
         }
 
@@ -246,6 +253,35 @@
             renderProgressBar(groupId); 
         }
 
+        function initHiddenGroup(groupId) {
+            if (!Object.keys(renderedGoups).length) {
+                init(groupId);
+            } else {
+                var questionsHtml = getQuestionsHtml(groupId);
+                var $nextLi = $qandaCol.find('li.current')
+                .removeClass('current');
+                var $questionsHtml = $(questionsHtml);
+
+                $questionsHtml.eq(0).addClass('current');
+                // append continue button to final message
+                $questionsHtml.last().find('.question').append('<button class="btn btn-success btn-lg continue" data-group-id="' + currentGoupId + '">' + 'Continue' + '</button>');
+                $questionsHtml.insertBefore($nextLi);
+                
+                renderProgressBar(groupId);
+
+                scrollToNextQuestion();
+                currentQuestionId = groups[groupId].questions.split(',')[0];
+                currentGoupId = groupId;
+                answers[currentGoupId] = {};
+
+                var $overlay = $('<div class="overlay"></div>');
+                $qandaCol.append($overlay);
+                setTimeout(function(){
+                    $overlay.fadeOut("slow");
+                }, 3000)
+            }
+        }
+
         render(); 
 
         var sentIds = {},
@@ -262,6 +298,13 @@
                     if (sentIds[ids[0]] && sentIds[ids[1]] && !renderedGoups[groupId]) {
                         renderedGoups[groupId] = true;
                         init(groupId);
+                    }
+
+                    // if hidden group
+                    if (groups[groupId].hidden && ids[0] === id &&  !renderedGoups[groupId]) {
+                        initHiddenGroup(groupId);
+                        renderedGoups[groupId] = true;
+                        
                     }
                 }
 

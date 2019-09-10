@@ -157,6 +157,14 @@ var sample_data = {
               label: 'label2',
               description: 'some description2',
             },
+        "group_number_3" : {
+            group_name: 'secret group 3',
+                questions: "4,5",
+                ids : '5432',
+                hidden: true,
+                label: 'label3',
+                description: 'some description3',
+            },
     },
     startMessage: {
         label: "Welcome!",
