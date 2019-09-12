@@ -23,6 +23,11 @@ body {
     padding-top: 10rem;
 }
 
+.qanda-container .progress-container ul {
+    padding: 0;
+    list-style: none;
+}
+
 .qanda-container .qanda {
     max-height: 100%;
     overflow: hidden;

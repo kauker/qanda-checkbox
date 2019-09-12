@@ -21,7 +21,7 @@
             questions = settings.data.questions;
         function render() {
             $row = $('<div class="row"></div>');
-            $progressCol = $('<div class="col-sm-4 progress-container"><div class="progress-inner">**insert here**</div></div>');
+            $progressCol = $('<div class="col-sm-4 progress-container"><div class="progress-inner">**insert here**<ul class="bars"></ul></div></div>');
             $qandaCol = $('<div class="col-sm-8 qanda"></div>');
             var $container = $('<div class="container-fluid qanda-container"></div>');
             $(settings.container)
@@ -45,13 +45,14 @@
                         return !questions[key].hidden || (questions[key].hidden && renderedHiddenQuestions[questions[key]['request_id']])
                     }).length;
 
-            $progressCol.append('<h3>' + groups[groupId].group_name + '</h3>');
-            $progressCol.append('<div class="'  + groupId + '">' +
+            $progressCol.find('ul')
+            .append('<li class="'  + groupId + '">' +
+                '<h3>' + groups[groupId].group_name + '</h3>' +
                 '<div class="progress">' +
                     '<div class="progress-bar" style="width:' + numAnswers / totalQuestions * 100 + '%;">' + '</div>' +
                 '</div>' + 
                 '<span>' + numAnswers + ' of ' + totalQuestions + '</span>' +
-            '</div>')
+            '</li>')
         }
 
         function updateProgressBar() {
