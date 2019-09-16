@@ -9,8 +9,18 @@ body {
     
 }
 
+.col-md-x5 {
+    width: 20%;
+    float: left;
+}
+
 .qanda-container {
     height: 750px;
+}
+
+.qanda-container ul {
+    padding: 0;
+    list-style: none;
 }
 
 .qanda-container .row {
@@ -21,11 +31,6 @@ body {
     height: 100%;
     background: khaki;
     padding-top: 10rem;
-}
-
-.qanda-container .progress-container ul {
-    padding: 0;
-    list-style: none;
 }
 
 .qanda-container .progress-container ul li {

@@ -42,21 +42,33 @@
 
         function renderCategories() {
             $categoriesOverlay = $('<div class="categories-overlay">Categories</div>');
-            var $row = $('<div class="row"></div>');
-            $categoriesOverlay.append($row);
-            Object.keys(categories).forEach(function(id) {
-                var $catCol = $('<div class="col-md-3 cat-col"><h3>' + categories[id]['name'] + '</h3></div>');
+            var $catRow = $('<div class="row"></div>');
+            $categoriesOverlay.append($catRow);
+            
+            var groupIds = Object.keys(groups).filter(function(groupId) {
+                return !groups[groupId]['hidden'] || !groups[groupId]['categories']
+            })
+            var categoriesToRender = groupIds.map(function(groupId) {
+                return groups[groupId]['categories']
+            });
+            categoriesToRender = categoriesToRender.join(',').split(',');
+            var catIds = Object.keys(categories).filter(function(catId) {
+                return categoriesToRender.indexOf(catId) > -1
+            });
+            var colFactor = catIds.length === 5 ? 'x5' : 12 / catIds.length
+            catIds.forEach(function(id) {
+                var $catCol = $('<div class="col-md-' + colFactor + ' cat-col"><h3>' + categories[id]['name'] + '</h3></div>');
                 $catCol.append('<ul class="group-names"></ul>');
-                Object.keys(groups).forEach(function(groupId) {
+                groupIds.forEach(function(groupId) {
                     var groupCategories = groups[groupId]['categories'].split(',')
                     if (groupCategories.indexOf(id) > -1) {
                         $catCol.find('ul').append('<li class="' + groupId + '">' + groups[groupId]['group_name'] +'</li>')
                     }
                 })
-                $row.append($catCol)
+                $catRow.append($catCol)
             })
 
-            $qandaCol.append($categoriesOverlay)
+            $row.append($categoriesOverlay)
         }
 
         function hideCategoriesOverlay(groupId) {
