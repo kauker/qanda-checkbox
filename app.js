@@ -12,13 +12,15 @@
             $progressCol,
             $qandaCol,
             dialog,
-            $form;
+            $form,
+            $groupsOverlay;
         var answers = {};
         var currentGoupId = null,
             currentQuestionId = null,
             selectedOption;
         var groups = settings.data.groups,
-            questions = settings.data.questions;
+            questions = settings.data.questions,
+            categories = settings.data.categories;
         function render() {
             $row = $('<div class="row"></div>');
             $progressCol = $('<div class="col-sm-4 progress-container"><div class="progress-inner">**insert here**<ul class="bars"></ul></div></div>');
@@ -30,12 +32,39 @@
 
             $row.append($progressCol);
             $row.append($qandaCol);
-            var $ul = $('<ul></ul>');
+            var $ul = $('<ul class="questions"></ul>');
             $qandaCol.append($ul);
 
             $qandaCol.on('click', 'button.option', onAnswerClick);
             $qandaCol.on('click', 'button.continue', onContinueClick);
             initDialog();
+        }
+
+        function renderCategories() {
+            $categoriesOverlay = $('<div class="categories-overlay">Categories</div>');
+            var $row = $('<div class="row"></div>');
+            $categoriesOverlay.append($row);
+            Object.keys(categories).forEach(function(id) {
+                var $catCol = $('<div class="col-md-3 cat-col"><h3>' + categories[id]['name'] + '</h3></div>');
+                $catCol.append('<ul class="group-names"></ul>');
+                Object.keys(groups).forEach(function(groupId) {
+                    var groupCategories = groups[groupId]['categories'].split(',')
+                    if (groupCategories.indexOf(id) > -1) {
+                        $catCol.find('ul').append('<li class="' + groupId + '">' + groups[groupId]['group_name'] +'</li>')
+                    }
+                })
+                $row.append($catCol)
+            })
+
+            $qandaCol.append($categoriesOverlay)
+        }
+
+        function hideCategoriesOverlay(groupId) {
+            // highlight rendered group name
+            $categoriesOverlay.find('ul.group-names > li.' + groupId).addClass('active');
+            setTimeout(function(){
+                $categoriesOverlay.fadeOut("slow");
+            }, 3000)
         }
 
         function renderProgressBar(groupId) {
@@ -124,7 +153,7 @@
 
         function renderQuestions(groupId) {
             var questionsHtml = getQuestionsHtml(groupId);
-            $qandaCol.find('ul').append(questionsHtml);
+            $qandaCol.find('ul.questions').append(questionsHtml);
         }
 
         function renderOption(opt, i) {
@@ -252,6 +281,10 @@
             renderNextButton(groupId);
             renderQuestions(groupId);
             renderProgressBar(groupId); 
+            if (Object.keys(renderedGoups).length <= 1) {
+                // if very first group
+                hideCategoriesOverlay(groupId);
+            }
         }
 
         function initHiddenGroup(groupId) {
@@ -284,6 +317,8 @@
         }
 
         render(); 
+
+        renderCategories();
 
         var sentIds = {},
             renderedGoups = {};

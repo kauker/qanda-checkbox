@@ -145,6 +145,7 @@ var sample_data = {
     "groups": {
         "group_number_1" : {
              group_name: "name of group 1",
+             categories: "0,1",
               questions: "1,2,3,4,5",
               ids : '1234,1245',
               label: 'label1',
@@ -152,6 +153,7 @@ var sample_data = {
             },
         "group_number_2" : {
              group_name: 'name of group 2',
+             categories: "0,2",
               questions: "2,4,5,6",
               ids : '4345,7245',
               label: 'label2',
@@ -159,12 +161,30 @@ var sample_data = {
             },
         "group_number_3" : {
             group_name: 'secret group 3',
+            categories: "4",
                 questions: "4,5",
                 ids : '5432',
                 hidden: true,
                 label: 'label3',
                 description: 'some description3',
             },
+    },
+    "categories": {
+        0: {
+            name: 'Cats'
+        },
+        1: {
+            name: 'Dogs'
+        },
+        2: {
+            name: 'Sharks'
+        },
+        3: {
+            name: 'Animals'
+        },
+        4: {
+            name: 'Birds'
+        }
     },
     startMessage: {
         label: "Welcome!",

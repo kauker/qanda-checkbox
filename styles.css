@@ -29,7 +29,7 @@ body {
 }
 
 .qanda-container .qanda {
-    max-height: 100%;
+    height: 100%;
     overflow: hidden;
 }
 .qanda-container .qanda ul {
@@ -103,4 +103,27 @@ textarea {
     width: 100%;
     height: 100%;
     background: rgba(0, 0, 0, 0.3);
+}
+
+.categories-overlay {
+    position: absolute;
+    padding: 50px;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: goldenrod;
+}
+
+.categories-overlay .cat-col{
+    min-height: 300px;
+}
+
+.categories-overlay .cat-col ul li {
+    padding: 0 10px;
+}
+.categories-overlay .cat-col ul li.active {
+    background: sienna;
+    color: #fff;
+    border-radius: 50em;
 }
