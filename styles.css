@@ -28,6 +28,13 @@ body {
     list-style: none;
 }
 
+.qanda-container .progress-container ul li {
+    padding: 5px 20px;
+}
+.qanda-container .progress-container ul li.active {
+    background: hotpink;
+}
+
 .qanda-container .qanda {
     height: 100%;
     overflow: hidden;

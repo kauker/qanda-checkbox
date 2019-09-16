@@ -23,7 +23,7 @@
             categories = settings.data.categories;
         function render() {
             $row = $('<div class="row"></div>');
-            $progressCol = $('<div class="col-sm-4 progress-container"><div class="progress-inner">**insert here**<ul class="bars"></ul></div></div>');
+            $progressCol = $('<div class="col-sm-4 progress-container"><div class="progress-inner"><ul class="bars"></ul></div></div>');
             $qandaCol = $('<div class="col-sm-8 qanda"></div>');
             var $container = $('<div class="container-fluid qanda-container"></div>');
             $(settings.container)
@@ -98,6 +98,13 @@
                 );
             
             $progressCol.find('.' + currentGoupId + ' span').text(numAnswers + ' of ' + totalQuestions)
+        }
+
+        function setActiveProgressBar() {
+            $progressCol.find('li.' + currentGoupId)
+                .addClass('active')
+                .siblings()
+                .removeClass('active')
         }
 
         function getQuestionsHtml(groupId) {
@@ -209,6 +216,7 @@
             $qandaCol.scrollTo($nextLi, 900);
 
             currentGoupId = $(this).data('group-id');
+            setActiveProgressBar();
             if (!answers[currentGoupId]) answers[currentGoupId] = {};
             currentQuestionId = $nextLi.data('question-id');
         }
@@ -284,6 +292,8 @@
             if (Object.keys(renderedGoups).length <= 1) {
                 // if very first group
                 hideCategoriesOverlay(groupId);
+                currentGoupId = groupId;
+                setActiveProgressBar();
             }
         }
 
@@ -307,6 +317,7 @@
                 currentQuestionId = groups[groupId].questions.split(',')[0];
                 currentGoupId = groupId;
                 answers[currentGoupId] = {};
+                setActiveProgressBar();
 
                 var $overlay = $('<div class="overlay"></div>');
                 $qandaCol.append($overlay);
