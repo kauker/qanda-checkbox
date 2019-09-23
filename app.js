@@ -14,6 +14,7 @@
             dialog,
             $form,
             $groupsOverlay;
+            $loadingOverlay = $('<div class="loading-overlay"><div class="loader"></div></div>')
         var answers = {};
         var currentGoupId = null,
             currentQuestionId = null,
@@ -38,6 +39,8 @@
             $qandaCol.on('click', 'button.option', onAnswerClick);
             $qandaCol.on('click', 'button.continue', onContinueClick);
             initDialog();
+            $row.append($loadingOverlay)
+            $loadingOverlay.fadeOut();
         }
 
         function renderCategories() {
@@ -217,6 +220,15 @@
             scrollToNextQuestion();
             
             updateProgressBar();
+            
+            // upload answers on each answered question
+            sendData();
+
+            // OR if you like to send only after entire group answered
+            // if ($nextLi.hasClass('final-message')) {
+            //     console.log('FINAL')
+            //      sendData();
+            // }
         }
 
         function onContinueClick() {
@@ -337,6 +349,28 @@
                     $overlay.fadeOut("slow");
                 }, 3000)
             }
+        }
+
+        function sendData() {
+            //Mock ajax function, remove for live ajax calls
+            $.ajax = function (param) {
+                _mockAjaxOptions = param;
+                //call success handler
+                param.complete("data", "textStatus", "jqXHR");
+            };
+            // end of remove 
+
+            $loadingOverlay.fadeIn()
+
+            $.ajax({
+                method: 'POST',
+                url: '/someurl/upload.php',
+                data: JSON.stringify(answers),
+                complete: function( data ) {
+                    console.log(data);
+                    $loadingOverlay.fadeOut()
+                  }
+            })
         }
 
         render(); 
