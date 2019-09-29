@@ -34,12 +34,12 @@ var sample_data = {
                 1: {
                     label: "true",
                     value: "true",
-                    action: "true"
+                    action: ""
                 },
                 2: {
                     label: "false",
                     value: "0",
-                    action: "true"
+                    action: ""
                 }
             }
         },

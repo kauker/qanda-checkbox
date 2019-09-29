@@ -154,7 +154,7 @@
                 var q = questions[key];
                 var label = '';
                 if (q.label) label = '<span class="label-text">' + q.label + '</span>';
-                questionsHtml += '<li data-question-id="' + key + '">' + 
+                questionsHtml += '<li data-question-id="' + key + '" data-group-id="' + groupId + '">' + 
                 '<div class="question">' +
                 label +
                 '<h2 class="title">' + q.question + '</h2>' +
@@ -163,7 +163,7 @@
                 '</li>';
             }
 
-            var finalMessage = '<li class="final-message">' + 
+            var finalMessage = '<li class="final-message ' + groupId + '">' + 
             '<div class="question">' +
             '<h2>' + settings.data.finalMessage.label + '</h2>' + 
             '<p>' + finalDescription + '</p>' +
@@ -183,8 +183,10 @@
         }
 
         function renderNextButton(groupId) {
-            var finalLi = $qandaCol.find('ul li.final-message').last();
-            if (finalLi.length) finalLi.find('.question').append('<button class="btn btn-success btn-lg continue" data-group-id="' + groupId + '">' + 'Continue' + '</button>');
+            var finalLi = $qandaCol.find('ul li.final-message.' + groupId);
+            var nextGroupId = finalLi.next().data('group-id');
+            var hasNextButton = finalLi.find('button.continue').length;
+            if (finalLi.length && nextGroupId && !hasNextButton) finalLi.find('.question').append('<button class="btn btn-success btn-lg continue" data-group-id="' + nextGroupId + '">' + 'Continue' + '</button>');
         }
 
         function scrollToNextQuestion() {
@@ -310,7 +312,7 @@
         }
 
         function init(groupId) {
-            renderNextButton(groupId);
+            // renderNextButton(groupId);
             renderQuestions(groupId);
             renderProgressBar(groupId); 
             if (Object.keys(renderedGoups).length <= 1) {
@@ -388,13 +390,18 @@
                 for (var i = 0; i < groupIds.length; i++) {
                     var groupId = groupIds[i];
                     var ids = groups[groupId].ids.split(',');
-                    if (sentIds[ids[0]] && sentIds[ids[1]] && !renderedGoups[groupId]) {
+                    // if it's id of non-rendered previously group
+                    if (!groups[groupId].hidden && ids.indexOf(id) > -1 && !renderedGoups[groupId]) {
                         renderedGoups[groupId] = true;
                         init(groupId);
                     }
+                    // if both group id's have been sent
+                    if (sentIds[ids[0]] && sentIds[ids[1]]) {
+                        renderNextButton(groupId)
+                    }
 
                     // if hidden group
-                    if (groups[groupId].hidden && ids[0] === id &&  !renderedGoups[groupId]) {
+                    if (groups[groupId].hidden && ids[0] === id && !renderedGoups[groupId]) {
                         initHiddenGroup(groupId);
                         renderedGoups[groupId] = true;
                         
