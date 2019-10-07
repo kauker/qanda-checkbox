@@ -222,6 +222,19 @@
             scrollToNextQuestion();
             
             updateProgressBar();
+
+            if ($nextLi.hasClass('final-message')) {
+                var numAnsweredGroups = Object.keys(answers).filter(function(groupId) {
+                        return !groups[groupId].hidden
+                    }).length,
+                    numTotalGroups = Object.keys(groups).filter(function(groupId) {
+                        return !groups[groupId].hidden
+                    }).length;
+                if (numAnsweredGroups === numTotalGroups) {
+                    // if no more unanswered groups left, display categories overlay
+                    setTimeout(renderCategories, 3000);
+                }
+            }
             
             // upload answers on each answered question
             sendData();
