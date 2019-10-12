@@ -223,17 +223,9 @@
             
             updateProgressBar();
 
-            if ($nextLi.hasClass('final-message')) {
-                var numAnsweredGroups = Object.keys(answers).filter(function(groupId) {
-                        return !groups[groupId].hidden
-                    }).length,
-                    numTotalGroups = Object.keys(groups).filter(function(groupId) {
-                        return !groups[groupId].hidden
-                    }).length;
-                if (numAnsweredGroups === numTotalGroups) {
-                    // if no more unanswered groups left, display categories overlay
-                    setTimeout(renderCategories, 3000);
-                }
+            if ($nextLi.hasClass('final-message') && $nextLi.is(':last-child')) {
+                // if no more unanswered groups left, display categories overlay
+                setTimeout(renderCategories, 3000);
             }
             
             // upload answers on each answered question
@@ -328,8 +320,8 @@
             // renderNextButton(groupId);
             renderQuestions(groupId);
             renderProgressBar(groupId); 
-            if (Object.keys(renderedGoups).length <= 1) {
-                // if very first group
+            if ($row.find('div.categories-overlay').length > 0) {
+                // if categories overlay is visible, hide it
                 hideCategoriesOverlay(groupId);
                 currentGoupId = groupId;
                 setActiveProgressBar();
@@ -357,6 +349,11 @@
                 currentGoupId = groupId;
                 answers[currentGoupId] = {};
                 setActiveProgressBar();
+
+                if ($row.find('div.categories-overlay').length > 0) {
+                    // if categories overlay is visible, hide it
+                    hideCategoriesOverlay(groupId);
+                }
 
                 var $overlay = $('<div class="overlay"></div>');
                 $qandaCol.append($overlay);
