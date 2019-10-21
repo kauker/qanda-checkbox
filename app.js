@@ -187,6 +187,11 @@
             var nextGroupId = finalLi.next().data('group-id');
             var hasNextButton = finalLi.find('button.continue').length;
             if (finalLi.length && nextGroupId && !hasNextButton) finalLi.find('.question').append('<button class="btn btn-success btn-lg continue" data-group-id="' + nextGroupId + '">' + 'Continue' + '</button>');
+
+            if (finalLi.hasClass('current') && finalLi.is(':last-child')) {
+                // if no more unanswered groups left, display categories overlay
+                setTimeout(renderCategories, 3000);
+            }
         }
 
         function scrollToNextQuestion() {
@@ -223,10 +228,10 @@
             
             updateProgressBar();
 
-            if ($nextLi.hasClass('final-message') && $nextLi.is(':last-child')) {
-                // if no more unanswered groups left, display categories overlay
-                setTimeout(renderCategories, 3000);
-            }
+            // if ($nextLi.hasClass('final-message') && $nextLi.is(':last-child')) {
+            //     // if no more unanswered groups left, display categories overlay
+            //     setTimeout(renderCategories, 3000);
+            // }
             
             // upload answers on each answered question
             sendData();
