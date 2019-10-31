@@ -36,7 +36,7 @@
             var $ul = $('<ul class="questions"></ul>');
             $qandaCol.append($ul);
 
-            $qandaCol.on('click', 'button.option', onAnswerClick);
+            $qandaCol.on('change', 'input[type="checkbox"]', setAnswer);
             $qandaCol.on('click', 'button.continue', onContinueClick);
             initDialog();
             $row.append($loadingOverlay)
@@ -157,9 +157,14 @@
                 questionsHtml += '<li data-question-id="' + key + '" data-group-id="' + groupId + '">' + 
                 '<div class="question">' +
                 label +
+                '<div class="checkbox">' +
+                '<label>' +
+                '<input type="checkbox" value="">' +
+                '<span class="cr"><i class="cr-icon glyphicon glyphicon-ok"></i></span>' +
+                '</label>' +
+                
                 '<h2 class="title">' + q.question + '</h2>' +
-                '<p class="description">' + q.description + '</p>' +
-                '<div class="options">' + Object.keys(q.options).map(key => q.options[key]).map(renderOption).join("") + '</div>' +
+                '</div>' +
                 '</li>';
             }
 
@@ -178,10 +183,6 @@
             $qandaCol.find('ul.questions').append(questionsHtml);
         }
 
-        function renderOption(opt, i) {
-            return '<button class="btn btn-default btn-lg option" data-opt="' + opt.value + '" data-action="' + opt.action + '">' + opt.label + '</button>';
-        }
-
         function renderNextButton(groupId) {
             var finalLi = $qandaCol.find('ul li.final-message.' + groupId);
             var nextGroupId = finalLi.next().data('group-id');
@@ -194,37 +195,32 @@
             }
         }
 
-        function scrollToNextQuestion() {
-            var $nextLi = $qandaCol.find('li.current');
-            $qandaCol.scrollTo($nextLi, 900);
-
-        }
-
-        function onAnswerClick() {
-            selectedOption = $(this).data('opt');
-            if ($(this).data('action') === true) {
-                $(this).addClass('btn-answer');
-                dialog.find( "textarea" ).val('');
-                dialog.dialog("option", "title", questions[currentQuestionId].question);
-                dialog.dialog('open');
-            } else {
-                if (!answers[currentGoupId][currentQuestionId]){
-                    $(this).addClass('btn-answer')
-                    setAnswer(selectedOption);
-                }
-            }
-        }
+        // function onAnswerClick() {
+        //     selectedOption = $(this).data('opt');
+        //     if ($(this).data('action') === true) {
+        //         $(this).addClass('btn-answer');
+        //         dialog.find( "textarea" ).val('');
+        //         dialog.dialog("option", "title", questions[currentQuestionId].question);
+        //         dialog.dialog('open');
+        //     } else {
+        //         if (!answers[currentGoupId][currentQuestionId]){
+        //             $(this).addClass('btn-answer')
+        //             setAnswer(selectedOption);
+        //         }
+        //     }
+        // }
 
         function setAnswer(val) {
-            answers[currentGoupId][currentQuestionId] = val;
+            currentGoupId = $(this).closest('li').data('group-id'),
+            currentQuestionId = $(this).closest('li').data('question-id');
+            answers[currentGoupId] = answers[currentGoupId] || {}
+            answers[currentGoupId][currentQuestionId] = this.checked;
             var $nextLi = $qandaCol.find('li.current')
                 .removeClass('current')
                 .next()
                 .addClass('current');
 
             currentQuestionId = $nextLi.data('question-id');
-
-            scrollToNextQuestion();
             
             updateProgressBar();
 
@@ -311,7 +307,7 @@
                 $(questionsHtml).insertBefore($nextLi);
                 
             updateProgressBar();
-            scrollToNextQuestion();
+
             currentQuestionId = key;
 
             var $overlay = $('<div class="overlay"></div>');
@@ -349,7 +345,6 @@
                 
                 renderProgressBar(groupId);
 
-                scrollToNextQuestion();
                 currentQuestionId = groups[groupId].questions.split(',')[0];
                 currentGoupId = groupId;
                 answers[currentGoupId] = {};

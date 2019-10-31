@@ -31,6 +31,8 @@ body {
     height: 100%;
     background: khaki;
     padding-top: 10rem;
+    position: fixed;
+    top: 0;
 }
 
 .qanda-container .progress-container ul li {
@@ -41,8 +43,9 @@ body {
 }
 
 .qanda-container .qanda {
-    height: 100%;
-    overflow: hidden;
+    min-height: 100%;
+    float: none;
+    margin-left: auto;
 }
 .qanda-container .qanda ul {
     list-style: none;
@@ -163,4 +166,55 @@ textarea {
   @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
+  }
+
+  .checkbox { 
+      display: flex;
+  }
+
+  .checkbox label {
+      padding-top: 31px;
+  }
+
+  .checkbox label:after {
+    content: '';
+    display: table;
+    clear: both;
+  }
+  
+  .checkbox .cr {
+    position: relative;
+    display: inline-block;
+    border: 1px solid #a9a9a9;
+    background: crimson;
+    border-radius: .25em;
+    width: 2.3em;
+    height: 2.3em;
+    float: left;
+    margin-right: .5em;
+  }
+  
+  .checkbox .cr .cr-icon {
+    position: absolute;
+    font-size: 1.5em;
+    color: sandybrown;
+    line-height: 0;
+    top: 50%;
+    left: 15%;
+  }
+  
+  .checkbox label input[type="checkbox"] {
+    display: none;
+  }
+  
+  .checkbox label input[type="checkbox"]+.cr>.cr-icon {
+    opacity: 0;
+  }
+  
+  .checkbox label input[type="checkbox"]:checked+.cr>.cr-icon {
+    opacity: 1;
+  }
+  
+  .checkbox label input[type="checkbox"]:disabled+.cr {
+    opacity: .5;
   }
